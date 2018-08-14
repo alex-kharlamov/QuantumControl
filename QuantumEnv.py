@@ -246,11 +246,15 @@ class QuantumEnv(gym.Env):
                 self.Aplus*sqrt(gamma*temp/self.omega),
                 self.SigmaP*sqrt(temp/self.epsilon/self.T1),
                 self.SigmaN*sqrt((1+temp/self.epsilon)/self.T1)]
-
+        if self.time_stamp > 2:
+            options = Options(store_states=True, rhs_reuse=True)
+        else:
+            options = Options(store_states=True)
+            
         result = mesolve([self.H, Ht], tensor(self.resonatorStartState, self.qubitStartState), 
             self.times[:self.time_stamp], cOps, 
             [self.eField, self.Aplus*self.Aminus, self.SigmaZ, self.SigmaX, self.SigmaPopulation],
-            options=Options(store_states=True))
+            options=options)
         # test
 
         end_dm = result.states[-1]
